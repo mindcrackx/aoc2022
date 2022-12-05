@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import re
 from typing import List
 
-data = open("input.txt", "r", encoding="utf-8").read().splitlines()
+data = open("input.txt", "r", encoding="utf-8").read()
 
 
 def test_data():
@@ -27,34 +27,25 @@ class Step:
     amt: int
 
 
-header = True
+crates, moves = data.split("\n\n")
+cols = {}
+for *row, last in zip(*crates.split("\n")):
+    if last.isdigit():
+        cols[int(last)] = [x for x in row if x.isupper()]
+
 steps: List[Step] = []
-crates_reversed = [[] for x in range(int((len(data[0]) + 1) / 4))]
-for line in data:
-    if header and line == "":
-        header = False
-        continue
+for line in moves.splitlines():
+    m = re.match(r"move (\d+) from (\d+) to (\d+)", line)
+    steps.append(Step(src=int(m[2]), dst=int(m[3]), amt=int(m[1])))
 
-    if not header:
-        m = re.match(r"move (\d+) from (\d+) to (\d+)", line)
-        steps.append(Step(src=int(m[2]), dst=int(m[3]), amt=int(m[1])))
-    else:
-        count = int((len(line) + 1) / 4)
-        if line[1].isdigit():
-            continue
-        line = " " + line
-        for x, i in enumerate(range(1, count * 4, 4)):
-            tmp = line[i + 1 : i + 2]
-            if tmp != " ":
-                crates_reversed[x].append(tmp)
-
-crates = [[]] * len(crates_reversed)
-for i, crate in enumerate(crates_reversed):
-    crates[i] = crate[::-1]
+for key in cols.keys():
+    cols[key] = cols[key][::-1]
 
 for step in steps:
     for i in range(step.amt):
-        crates[step.dst - 1].append(crates[step.src - 1].pop())
+        cols[step.dst].append(cols[step.src].pop())
 
-result = "".join(crate[-1] for crate in crates)
+# always get top value
+result = "".join([v0 for *_, v0 in cols.values()])
 print(result)
+exit()
