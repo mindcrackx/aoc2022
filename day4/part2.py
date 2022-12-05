@@ -1,3 +1,6 @@
+import re
+
+
 data = open("input.txt", "r", encoding="utf-8").read().splitlines()
 
 
@@ -12,14 +15,10 @@ def test_input():
 
 # data = test_input()
 
-
 count = 0
 for line in data:
-    left, right = line.split(",")
-    a, b = left.split("-")
-    c, d = right.split("-")
-    # got stuck ~ 16 minutes until i realized i forgot to convert to ints...
-    a, b, c, d = int(a), int(b), int(c), int(d)
+    m = re.match(r"^(\d+)-(\d+),(\d+)-(\d+)$", line)
+    a, b, c, d = int(m[1]), int(m[2]), int(m[3]), int(m[4])
 
     if a <= d and b >= c:
         count += 1
