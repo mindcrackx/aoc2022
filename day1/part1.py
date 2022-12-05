@@ -1,18 +1,7 @@
-data = open("input.txt", "r", encoding="utf-8").read().splitlines()
+data = open("input.txt", "r", encoding="utf-8").read()
 
-old = -1000
-new = 0
-sum_max = 0
-for x in data:
-    if x == "":
-        if sum_max < new:
-            sum_max = new
-        old = new
-        new = 0
-        continue
-    new += int(x)
-if sum_max < new:
-    sum_max = new
+calories = []
+for chunk in data.split("\n\n"):
+    calories.append(sum(map(int, chunk.splitlines())))
 
-print("=" * 10)
-print(sum_max)
+print(max(calories))

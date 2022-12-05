@@ -1,18 +1,9 @@
-data = open("input.txt", "r", encoding="utf-8").read().splitlines()
+from heapq import nlargest
 
-old = -1000
-new = 0
-sumall = []
-for x in data:
-    if x == "":
-        sumall.append(new)
-        old = new
-        new = 0
-        continue
+data = open("input.txt", "r", encoding="utf-8").read()
 
-    new += int(x)
-sumall.append(new)
+calories = []
+for chunk in data.split("\n\n"):
+    calories.append(sum(map(int, chunk.splitlines())))
 
-s = sorted(sumall, reverse=True)
-print("========")
-print(sum([s[0], s[1], s[2]]))
+print(sum(nlargest(3, calories)))
