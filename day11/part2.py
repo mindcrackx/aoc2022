@@ -112,17 +112,44 @@ monkeys: List[Monkey] = []
 for monkey_str in monkeys_str:
     monkeys.append(Monkey.from_string(monkey_str))
 
+div_lcm = None
 
-div_lcm = math.lcm(*[m._divisor for m in monkeys])
 
+def lcm(*ints) -> int:
+    import sys
+
+    if sys.version_info >= (3, 9):
+        return math.lcm(*ints)
+    elif sys.version_info >= (3, 5):
+        gcd = math.gcd(ints[0], ints[1])
+        for i in ints[2:]:
+            gcd = math.gcd(gcd, i)
+        return math.prod(ints) // gcd
+    else:
+        import fractions
+
+        gcd = fractions.gcd(ints[0], ints[1])
+        for i in ints[2:]:
+            gcd = fractions.gcd(gcd, i)
+        return math.prod(ints) // gcd
+
+
+div_lcm = lcm(*[m._divisor for m in monkeys])
+
+import time
+
+start = time.monotonic_ns()
 round = 0
 while round != 10_000:
+    # print(round)
     for monkey in monkeys:
         while monkey.can_throw():
             throw = monkey.throw(div_lcm)
             monkeys[throw[0]].catch(throw[1])
     round += 1
-
 catchnums = [m.inspect_count for m in monkeys]
 catchnums.sort(reverse=True)
-print(catchnums[0] * catchnums[1])
+
+stop = time.monotonic_ns()
+
+print(catchnums[0] * catchnums[1], "in:", stop - start)
